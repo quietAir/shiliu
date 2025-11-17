@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系购买 - 会理石榴</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #f0fff4 100%);
+        }
+        .glass-nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        #p5-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        .contact-card {
+            transition: all 0.3s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .form-input {
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(192, 57, 43, 0.15);
+        }
+        .map-container {
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- P5.js Background Canvas -->
+    <div id="p5-background"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-green-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">🍎</span>
+                </div>
+                <span class="text-2xl font-bold text-gray-800">会理石榴</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-gray-700 hover:text-red-600 transition-colors">首页</a>
+                <a href="products.html" class="text-gray-700 hover:text-red-600 transition-colors">产品展示</a>
+                <a href="about.html" class="text-gray-700 hover:text-red-600 transition-colors">关于会理</a>
+                <a href="contact.html" class="text-red-600 font-medium border-b-2 border-red-600 pb-1">联系购买</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="cart-btn" class="relative p-2 text-gray-700 hover:text-red-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0h9"></path>
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-24 pb-8 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-4xl lg:text-6xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">
+                联系购买
+            </h1>
+            <p class="text-xl text-gray-600">专业的服务团队，为您提供最优质的购买体验</p>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="py-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8" style="font-family: 'Playfair Display', serif;">
+                        购买咨询
+                    </h2>
+                    
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">姓名 *</label>
+                                <input type="text" name="name" required 
+                                       class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">联系电话 *</label>
+                                <input type="tel" name="phone" required 
+                                       class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">邮箱地址</label>
+                            <input type="email" name="email" 
+                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">购买用途</label>
+                            <select name="purpose" 
+                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                                <option value="">请选择购买用途</option>
+                                <option value="personal">个人食用</option>
+                                <option value="gift">礼品赠送</option>
+                                <option value="business">商务采购</option>
+                                <option value="wholesale">批发零售</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">需求量</label>
+                            <select name="quantity" 
+                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                                <option value="">请选择需求量</option>
+                                <option value="1-10">1-10个</option>
+                                <option value="11-50">11-50个</option>
+                                <option value="51-100">51-100个</option>
+                                <option value="100+">100个以上</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">详细需求</label>
+                            <textarea name="message" rows="4" 
+                                      class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500" 
+                                      placeholder="请详细描述您的需求，我们会为您提供专业的建议和服务..."></textarea>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" id="agree" name="agree" required class="mr-2">
+                            <label for="agree" class="text-sm text-gray-600">
+                                我同意接收相关的商业信息和促销活动
+                            </label>
+                        </div>
+                        
+                        <button type="button" onclick="submitContactForm()" 
+                                class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 rounded-lg font-semibold text-lg hover:from-red-700 hover:to-red-800 transition-all transform hover:scale-105">
+                            提交咨询
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="space-y-8">
+                    <div class="contact-card bg-white rounded-2xl p-8 shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">联系方式</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">📞</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">客服热线</h4>
+                                    <p class="text-gray-600">未设置</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">💬</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">微信客服</h4>
+                                    <p class="text-gray-600">未设置</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">📧</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">邮箱地址</h4>
+                                    <p class="text-gray-600">未设置</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">🕒</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">服务时间</h4>
+                                    <p class="text-gray-600">周一至周日 8:00-21:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card bg-white rounded-2xl p-8 shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">公司地址</h3>
+                        <div class="space-y-4">
+                            <p class="text-gray-600">
+                                <strong>种植基地：</strong><br>
+                                四川省凉山彝族自治州会理市新发镇营盘村5组石榴产业区
+                            </p>
+                            <p class="text-gray-600">
+                                <strong>营销中心：</strong><br>
+                                四川省凉山彝族自治州会理市新发镇营盘村5组石榴产业区
+                            </p>
+                            <div id="contact-map" class="map-container mt-4"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card bg-white rounded-2xl p-8 shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">配送服务</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-green-600 text-xl">✓</span>
+                                <span class="text-gray-600">全国包邮，72小时内发货</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-green-600 text-xl">✓</span>
+                                <span class="text-gray-600">气柱加装，安全配送</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-green-600 text-xl">✓</span>
+                                <span class="text-gray-600">破损包赔，品质保证</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-green-600 text-xl">✓</span>
+                                <span class="text-gray-600">支持货到付款</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wholesale Section -->
+    <section class="py-16 px-6 bg-white bg-opacity-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">批发合作</h2>
+                <p class="text-xl text-gray-600">欢迎各地经销商和商家合作洽谈</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="contact-card bg-white rounded-2xl p-8 text-center shadow-lg">
+                    <div class="w-20 h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-6">
+                        <span class="text-4xl">🏪</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">零售商合作</h3>
+                    <p class="text-gray-600 mb-6">面向水果店、超市、电商平台等零售商，提供优质的产品和优惠的价格。</p>
+                    <ul class="text-sm text-gray-600 space-y-2 mb-6">
+                        <li>• 批量采购优惠</li>
+                        <li>• 稳定供货保障</li>
+                        <li>• 营销支持服务</li>
+                    </ul>
+                    <button onclick="showWholesaleInfo('retail')" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                        了解详情
+                    </button>
+                </div>
+                
+                <div class="contact-card bg-white rounded-2xl p-8 text-center shadow-lg">
+                    <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <span class="text-4xl">🏭</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">加工企业合作</h3>
+                    <p class="text-gray-600 mb-6">为果汁厂、食品加工厂等提供优质的石榴原料，支持定制化加工服务。</p>
+                    <ul class="text-sm text-gray-600 space-y-2 mb-6">
+                        <li>• 原料直供</li>
+                        <li>• 品质稳定</li>
+                        <li>• 技术支持</li>
+                    </ul>
+                    <button onclick="showWholesaleInfo('processing')" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        了解详情
+                    </button>
+                </div>
+                
+                <div class="contact-card bg-white rounded-2xl p-8 text-center shadow-lg">
+                    <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                        <span class="text-4xl">🚚</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">出口贸易合作</h3>
+                    <p class="text-gray-600 mb-6">面向国际市场，提供符合出口标准的优质石榴，支持各种贸易方式。</p>
+                    <ul class="text-sm text-gray-600 space-y-2 mb-6">
+                        <li>• 出口资质齐全</li>
+                        <li>• 国际标准认证</li>
+                        <li>• 专业物流服务</li>
+                    </ul>
+                    <button onclick="showWholesaleInfo('export')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        了解详情
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">常见问题</h2>
+                <p class="text-xl text-gray-600">解答您关心的问题</p>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <button class="w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold">石榴的保质期是多久？</h3>
+                        <span class="text-2xl">+</span>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600">
+                        <p>新鲜石榴在常温下可保存7-10天，冷藏保存可延长至2-3周。建议购买后尽快食用，以保证最佳口感和营养价值。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <button class="w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold">支持哪些支付方式？</h3>
+                        <span class="text-2xl">+</span>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600">
+                        <p>我们支持微信支付、支付宝、银行转账、货到付款等多种支付方式，方便您的选择。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <button class="w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold">配送范围和时间？</h3>
+                        <span class="text-2xl">+</span>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600">
+                        <p>我们支持全国配送，一般情况下72小时内发货，3-5天内送达。偏远地区可能需要更长时间。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <button class="w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold">如何挑选优质的石榴？</h3>
+                        <span class="text-2xl">+</span>
+                    </button>
+                    <div class="faq-content hidden mt-4 text-gray-600">
+                        <p>优质石榴应该果皮鲜红有光泽，手感沉重，表面光滑无斑点。我们会为您精心挑选，确保每一颗都是精品。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-green-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">🍎</span>
+                </div>
+                <span class="text-2xl font-bold">会理石榴</span>
+            </div>
+            <p class="text-gray-400 mb-6">源自四川会理，为您带来最天然的健康美味</p>
+            <div class="text-sm text-gray-500">
+                © 2025 会理石榴. 保留所有权利.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-semibold">购物车</h3>
+                <button id="close-cart" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+            <p class="text-gray-500 text-center">购物车为空</p>
+        </div>
+        <div class="border-t p-6">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-lg font-semibold">总计:</span>
+                <span id="cart-total" class="text-xl font-bold text-red-600">¥0</span>
+            </div>
+            <button class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                立即结算
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 初始化地图
+        function initMap() {
+            // 会理市新发镇营盘村5组坐标
+            const huiliCoords = [26.293333, 102.245556];
+            
+            const map = L.map('contact-map').setView(huiliCoords, 15);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // 添加标记
+            L.marker(huiliCoords).addTo(map)
+                .bindPopup('<b>会理石榴营销中心</b><br>四川省凉山彝族自治州会理市新发镇营盘村5组')
+                .openPopup();
+        }
+        
+        // FAQ 切换功能
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('span');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.textContent = '-';
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.textContent = '+';
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+        
+        // 显示批发信息
+        function showWholesaleInfo(type) {
+            let message = '';
+            switch(type) {
+                case 'retail':
+                    message = '零售商合作：批量采购享受8折优惠，月采购量100个以上可申请VIP客户待遇。联系电话：400-888-9999';
+                    break;
+                case 'processing':
+                    message = '加工企业合作：提供原料直供服务，可根据需求定制规格，支持长期合作。联系电话：138-8888-9999';
+                    break;
+                case 'export':
+                    message = '出口贸易合作：具备完整出口资质，可提供各种认证文件，支持多种贸易方式。联系电话：139-8888-9999';
+                    break;
+            }
+            showSuccessMessage(message);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+        });
+    </script>
+    
+    <script src="main.js"></script>
+</body>
+</html>

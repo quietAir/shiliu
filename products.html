@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品展示 - 会理石榴</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #f0fff4 100%);
+        }
+        .glass-nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .filter-btn.active {
+            background: linear-gradient(135deg, #c0392b, #27ae60);
+            color: white;
+        }
+        #p5-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        .price-range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+        .price-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #c0392b;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- P5.js Background Canvas -->
+    <div id="p5-background"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-green-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">🍎</span>
+                </div>
+                <span class="text-2xl font-bold text-gray-800">会理石榴</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-gray-700 hover:text-red-600 transition-colors">首页</a>
+                <a href="products.html" class="text-red-600 font-medium border-b-2 border-red-600 pb-1">产品展示</a>
+                <a href="about.html" class="text-gray-700 hover:text-red-600 transition-colors">关于会理</a>
+                <a href="contact.html" class="text-gray-700 hover:text-red-600 transition-colors">联系购买</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="cart-btn" class="relative p-2 text-gray-700 hover:text-red-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0h9"></path>
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-24 pb-8 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-4xl lg:text-6xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">
+                产品展示
+            </h1>
+            <p class="text-xl text-gray-600">精选优质会理石榴，满足您的不同需求</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-8 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Sidebar Filters -->
+                <div class="lg:w-1/4">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg sticky top-32">
+                        <h3 class="text-xl font-semibold mb-6">筛选条件</h3>
+                        
+                        <!-- Category Filter -->
+                        <div class="mb-6">
+                            <h4 class="font-medium mb-3">产品分类</h4>
+                            <div class="space-y-2">
+                                <button onclick="filterProducts('all')" class="filter-btn active w-full text-left px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                                    全部产品
+                                </button>
+                                <button onclick="filterProducts('premium')" class="filter-btn w-full text-left px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                                    特级产品
+                                </button>
+                                <button onclick="filterProducts('organic')" class="filter-btn w-full text-left px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                                    有机认证
+                                </button>
+                                <button onclick="filterProducts('gift')" class="filter-btn w-full text-left px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                                    礼品套装
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Price Filter -->
+                        <div class="mb-6">
+                            <h4 class="font-medium mb-3">价格区间</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm text-gray-600">
+                                    <span>¥0</span>
+                                    <span>¥500</span>
+                                </div>
+                                <input type="range" min="0" max="500" value="500" class="price-range-slider w-full" id="price-range">
+                                <div class="text-center">
+                                    <span class="text-sm text-gray-600">最高价格: ¥<span id="price-value">500</span></span>
+                                </div>
+                                <button onclick="applyPriceFilter()" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    应用筛选
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Size Filter -->
+                        <div class="mb-6">
+                            <h4 class="font-medium mb-3">果实大小</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" onchange="filterBySize('large')">
+                                    <span>大果 (500g以上)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" onchange="filterBySize('medium')">
+                                    <span>中果 (300-500g)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" onchange="filterBySize('small')">
+                                    <span>小果 (300g以下)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Products Grid -->
+                <div class="lg:w-3/4">
+                    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6" id="products-grid">
+                        <!-- Product 1 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="premium" data-price="68" data-size="large">
+                            <img src="resources/pomegranate-1.jpg" alt="特级大果石榴" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">特级大果石榴</h3>
+                                <p class="text-gray-600 text-sm">单果重500g以上，果形饱满，色泽鲜艳，籽粒饱满多汁</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥68</span>
+                                    <span class="text-sm text-gray-500">500g+</span>
+                                </div>
+                                <button onclick="addToCart('特级大果石榴', 68)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 2 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="organic" data-price="88" data-size="large">
+                            <img src="resources/pomegranate-2.jpg" alt="有机认证石榴" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">有机认证石榴</h3>
+                                <p class="text-gray-600 text-sm">无农药残留，纯天然种植，健康首选，营养丰富</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥88</span>
+                                    <span class="text-sm text-gray-500">500g+</span>
+                                </div>
+                                <button onclick="addToCart('有机认证石榴', 88)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 3 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="gift" data-price="298" data-size="medium">
+                            <img src="resources/pomegranate-3.jpg" alt="精品礼盒装" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">精品礼盒装</h3>
+                                <p class="text-gray-600 text-sm">6个装精美礼盒，送礼自用两相宜，品质保证</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥298</span>
+                                    <span class="text-sm text-gray-500">6个装</span>
+                                </div>
+                                <button onclick="addToCart('精品礼盒装', 298)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 4 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="premium" data-price="38" data-size="small">
+                            <img src="resources/sliced-pomegranate.jpg" alt="现切石榴籽" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">现切石榴籽</h3>
+                                <p class="text-gray-600 text-sm">新鲜剥好的石榴籽，即食方便，营养丰富，口感绝佳</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥38</span>
+                                    <span class="text-sm text-gray-500">250g</span>
+                                </div>
+                                <button onclick="addToCart('现切石榴籽', 38)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 5 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="organic" data-price="128" data-size="large">
+                            <img src="resources/pomegranate-1.jpg" alt="有机大果石榴" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">有机大果石榴</h3>
+                                <p class="text-gray-600 text-sm">有机认证大果，单果600g以上，品质卓越</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥128</span>
+                                    <span class="text-sm text-gray-500">600g+</span>
+                                </div>
+                                <button onclick="addToCart('有机大果石榴', 128)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 6 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="gift" data-price="168" data-size="medium">
+                            <img src="resources/pomegranate-2.jpg" alt="家庭分享装" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">家庭分享装</h3>
+                                <p class="text-gray-600 text-sm">3个装家庭装，经济实惠，适合家庭分享</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥168</span>
+                                    <span class="text-sm text-gray-500">3个装</span>
+                                </div>
+                                <button onclick="addToCart('家庭分享装', 168)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 7 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="premium" data-price="58" data-size="medium">
+                            <img src="resources/pomegranate-3.jpg" alt="优选石榴" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">优选石榴</h3>
+                                <p class="text-gray-600 text-sm">精选优质石榴，果形端正，口感清甜</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥58</span>
+                                    <span class="text-sm text-gray-500">400-500g</span>
+                                </div>
+                                <button onclick="addToCart('优选石榴', 58)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 8 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="organic" data-price="78" data-size="medium">
+                            <img src="resources/sliced-pomegranate.jpg" alt="有机中果石榴" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">有机中果石榴</h3>
+                                <p class="text-gray-600 text-sm">有机认证中果，品质保证，健康美味</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥78</span>
+                                    <span class="text-sm text-gray-500">400-500g</span>
+                                </div>
+                                <button onclick="addToCart('有机中果石榴', 78)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product 9 -->
+                        <div class="product-item product-card bg-white rounded-2xl p-6 shadow-lg" data-category="gift" data-price="398" data-size="large">
+                            <img src="resources/pomegranate-1.jpg" alt="豪华礼品装" class="w-full h-48 object-cover rounded-xl mb-4">
+                            <div class="space-y-3">
+                                <h3 class="text-xl font-semibold">豪华礼品装</h3>
+                                <p class="text-gray-600 text-sm">8个装豪华礼盒，高端大气，送礼首选</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-bold text-red-600">¥398</span>
+                                    <span class="text-sm text-gray-500">8个装</span>
+                                </div>
+                                <button onclick="addToCart('豪华礼品装', 398)" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 px-6 mt-16">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-green-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">🍎</span>
+                </div>
+                <span class="text-2xl font-bold">会理石榴</span>
+            </div>
+            <p class="text-gray-400 mb-6">源自四川会理，为您带来最天然的健康美味</p>
+            <div class="text-sm text-gray-500">
+                © 2025 会理石榴. 保留所有权利.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-semibold">购物车</h3>
+                <button id="close-cart" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+            <p class="text-gray-500 text-center">购物车为空</p>
+        </div>
+        <div class="border-t p-6">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-lg font-semibold">总计:</span>
+                <span id="cart-total" class="text-xl font-bold text-red-600">¥0</span>
+            </div>
+            <button class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                立即结算
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 价格范围滑块
+        const priceRange = document.getElementById('price-range');
+        const priceValue = document.getElementById('price-value');
+        
+        priceRange.addEventListener('input', function() {
+            priceValue.textContent = this.value;
+        });
+        
+        // 筛选按钮激活状态
+        function setActiveFilter(button) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+        }
+        
+        // 应用价格筛选
+        function applyPriceFilter() {
+            const maxPrice = parseInt(document.getElementById('price-range').value);
+            filterByPrice(0, maxPrice);
+        }
+    </script>
+    
+    <script src="main.js"></script>
+</body>
+</html>

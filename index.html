@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会理石榴 - 天然红宝石，健康之选</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #f0fff4 100%);
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(45deg, #c0392b, #27ae60, #f39c12);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease-in-out infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .splide__slide img {
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        #p5-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        .glass-nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .feature-icon {
+            background: linear-gradient(135deg, #c0392b, #27ae60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- P5.js Background Canvas -->
+    <div id="p5-background"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-green-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">🍎</span>
+                </div>
+                <span class="text-2xl font-bold text-gray-800">会理石榴</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-red-600 font-medium border-b-2 border-red-600 pb-1">首页</a>
+                <a href="products.html" class="text-gray-700 hover:text-red-600 transition-colors">产品展示</a>
+                <a href="about.html" class="text-gray-700 hover:text-red-600 transition-colors">关于会理</a>
+                <a href="contact.html" class="text-gray-700 hover:text-red-600 transition-colors">联系购买</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="cart-btn" class="relative p-2 text-gray-700 hover:text-red-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0h9"></path>
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <h1 class="hero-title text-5xl lg:text-7xl font-bold leading-tight">
+                        会理石榴<br>
+                        <span class="text-4xl lg:text-6xl">天然红宝石</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 leading-relaxed">
+                        来自四川会理的天然石榴，生长在海拔2000米的高原地区，享受充足的阳光和纯净的水源。
+                        每一颗石榴都凝聚了大自然的精华，为您带来最纯正的健康美味。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="window.location.href='products.html'" class="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-red-700 hover:to-red-800 transition-all transform hover:scale-105">
+                            立即选购
+                        </button>
+                        <button onclick="window.location.href='about.html'" class="border-2 border-green-600 text-green-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-green-600 hover:text-white transition-all">
+                            了解更多
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl">
+                        <img src="resources/hero-bg.jpg" alt="会理石榴" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-xl">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-red-600">98%</div>
+                            <div class="text-sm text-gray-600">客户满意度</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Carousel -->
+    <section class="py-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">精选产品</h2>
+                <p class="text-xl text-gray-600">每一颗石榴都经过精心挑选，确保最佳品质</p>
+            </div>
+            
+            <div class="splide" id="product-carousel">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-2xl p-6 shadow-lg">
+                                <img src="resources/pomegranate-1.jpg" alt="特级大果石榴" class="w-full h-48 object-cover rounded-xl mb-4">
+                                <h3 class="text-xl font-semibold mb-2">特级大果石榴</h3>
+                                <p class="text-gray-600 mb-4">单果重500g以上，果形饱满，色泽鲜艳</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-2xl font-bold text-red-600">¥68</span>
+                                    <button onclick="addToCart('特级大果石榴', 68)" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                        加入购物车
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-2xl p-6 shadow-lg">
+                                <img src="resources/pomegranate-2.jpg" alt="有机认证石榴" class="w-full h-48 object-cover rounded-xl mb-4">
+                                <h3 class="text-xl font-semibold mb-2">有机认证石榴</h3>
+                                <p class="text-gray-600 mb-4">无农药残留，纯天然种植，健康首选</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-2xl font-bold text-red-600">¥88</span>
+                                    <button onclick="addToCart('有机认证石榴', 88)" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                        加入购物车
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-2xl p-6 shadow-lg">
+                                <img src="resources/pomegranate-3.jpg" alt="精品礼盒装" class="w-full h-48 object-cover rounded-xl mb-4">
+                                <h3 class="text-xl font-semibold mb-2">精品礼盒装</h3>
+                                <p class="text-gray-600 mb-4">6个装精美礼盒，送礼自用两相宜</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-2xl font-bold text-red-600">¥298</span>
+                                    <button onclick="addToCart('精品礼盒装', 298)" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                        加入购物车
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-2xl p-6 shadow-lg">
+                                <img src="resources/sliced-pomegranate.jpg" alt="现切石榴籽" class="w-full h-48 object-cover rounded-xl mb-4">
+                                <h3 class="text-xl font-semibold mb-2">现切石榴籽</h3>
+                                <p class="text-gray-600 mb-4">新鲜剥好的石榴籽，即食方便，营养丰富</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-2xl font-bold text-red-600">¥38</span>
+                                    <button onclick="addToCart('现切石榴籽', 38)" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                        加入购物车
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 px-6 bg-white bg-opacity-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">会理石榴的独特优势</h2>
+                <p class="text-xl text-gray-600">三大核心优势，打造顶级石榴品质</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
+                        <span class="feature-icon text-4xl">🏔️</span>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800">高原种植</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        生长在海拔2000米的高原地区，昼夜温差大，阳光充足，
+                        有利于糖分的积累，使石榴更加甜美可口。
+                    </p>
+                </div>
+                
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center">
+                        <span class="feature-icon text-4xl">💧</span>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800">纯净水源</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        采用雪山融水灌溉，水质纯净无污染，
+                        确保了石榴的天然品质和营养价值。
+                    </p>
+                </div>
+                
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full flex items-center justify-center">
+                        <span class="feature-icon text-4xl">🌱</span>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800">有机种植</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        坚持有机种植理念，不使用化学农药和肥料，
+                        每一颗石榴都是大自然的纯净馈赠。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">客户评价</h2>
+                <p class="text-xl text-gray-600">听听他们怎么说</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-white font-bold">
+                            李
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold">李女士</h4>
+                            <div class="text-yellow-500">★★★★★</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        "石榴非常新鲜，颗粒饱满多汁，甜度适中。包装也很精美，
+                        送人很有面子。会继续回购的！"
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold">
+                            王
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold">王师傅</h4>
+                            <div class="text-yellow-500">★★★★★</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        "作为一个石榴爱好者，会理石榴是我吃过最好吃的。
+                        籽大味甜，营养价值高，全家人都很喜欢。"
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                            张
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold">张经理</h4>
+                            <div class="text-yellow-500">★★★★★</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        "公司采购作为员工福利，大家反馈都很好。
+                        品质稳定，服务周到，是值得信赖的品牌。"
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="flex items-center justify-center space-x-2 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-green-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">🍎</span>
+                </div>
+                <span class="text-2xl font-bold">会理石榴</span>
+            </div>
+            <p class="text-gray-400 mb-6">源自四川会理，为您带来最天然的健康美味</p>
+            <div class="text-sm text-gray-500">
+                © 2025 会理石榴. 保留所有权利.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-semibold">购物车</h3>
+                <button id="close-cart" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+            <p class="text-gray-500 text-center">购物车为空</p>
+        </div>
+        <div class="border-t p-6">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-lg font-semibold">总计:</span>
+                <span id="cart-total" class="text-xl font-bold text-red-600">¥0</span>
+            </div>
+            <button class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                立即结算
+            </button>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
