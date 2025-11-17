@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCarousel();
     initializeCart();
     initializeAnimations();
+    initializeMobileMenu();
+    initializeFloatingButtons();
 });
 
 // 初始化轮播
@@ -58,6 +60,98 @@ function initializeCarousel() {
                 }
             }
         }).mount();
+    }
+}
+
+// 初始化浮动按钮
+function initializeFloatingButtons() {
+    const backToTopBtn = document.getElementById('backToTop');
+    const wechatContact = document.getElementById('wechatContact');
+    const wechatQr = document.getElementById('wechatQr');
+    
+    // 回到顶部功能
+    if (backToTopBtn) {
+        // 初始状态：页面在顶部时隐藏按钮
+        backToTopBtn.style.opacity = '0';
+        backToTopBtn.style.visibility = 'hidden';
+        
+        // 滚动事件监听
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.opacity = '1';
+                backToTopBtn.style.visibility = 'visible';
+            } else {
+                backToTopBtn.style.opacity = '0';
+                backToTopBtn.style.visibility = 'hidden';
+            }
+        });
+        
+        // 点击回到顶部
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+    
+    // 微信联系功能
+    if (wechatContact && wechatQr) {
+        let isQrVisible = false;
+        
+        // 点击显示/隐藏二维码
+        wechatContact.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止事件冒泡
+            
+            if (isQrVisible) {
+                wechatQr.classList.remove('active');
+            } else {
+                wechatQr.classList.add('active');
+            }
+            
+            isQrVisible = !isQrVisible;
+        });
+        
+        // 点击页面其他地方关闭二维码
+        document.addEventListener('click', (e) => {
+            if (isQrVisible && !wechatQr.contains(e.target) && e.target !== wechatContact) {
+                wechatQr.classList.remove('active');
+                isQrVisible = false;
+            }
+        });
+    }
+}
+
+// 初始化移动端菜单
+function initializeMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeMobileMenu = document.getElementById('closeMobileMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    
+    // 打开移动端菜单
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+            mobileMenuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        });
+    }
+    
+    // 关闭移动端菜单
+    function closeMobileMenuFunc() {
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+        document.body.style.overflow = ''; // 恢复滚动
+    }
+    
+    if (closeMobileMenu) {
+        closeMobileMenu.addEventListener('click', closeMobileMenuFunc);
+    }
+    
+    // 点击遮罩层关闭菜单
+    if (mobileMenuOverlay) {
+        mobileMenuOverlay.addEventListener('click', closeMobileMenuFunc);
     }
 }
 
